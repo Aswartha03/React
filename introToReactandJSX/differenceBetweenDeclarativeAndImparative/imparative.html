@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Imparative WebPage</title>
+    <style>
+        body{
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    
+   <h3>Welcome to Imparative web Page</h3>
+   <div id="container">
+
+   </div> 
+   <button id="add-btn">Add Data</button>
 </body>
 </html>
+<script>
+    let container = document.getElementById("container")
+    container.innerHTML=""
+    document.getElementById("add-btn").addEventListener("click",()=>{
+        // container.innerHTML=""
+        let para = document.createElement("p")
+        para.innerText="I am a New Para from DOM"
+        container.append(para)
+    })
+
+</script>

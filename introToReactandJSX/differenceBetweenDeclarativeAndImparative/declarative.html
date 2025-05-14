@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Declarative WebPage</title>
+    <style>
+        body{
+            text-align: center;
+        }
+        p{
+            color: blue;
+            font-size: 20px;
+        }
+    </style>
+    <!-- basic setup  -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+</head>
+<body>
+    <h3>Welcome to Declarative WebPage</h3>
+    <p id="root">Para From DOM</p>
+</body>
+</html>
+<script>
+    let  para = React.createElement("p",{class:"para"},"Para from React")
+    let root  = ReactDOM.createRoot(document.getElementById("root")) 
+    root.render(para)
+
+</script>
