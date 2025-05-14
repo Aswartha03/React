@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple webPage</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body{
+            text-align: center;
+        }
+        .main-heading{
+            color: rgb(162, 81, 238);
+        }
+    </style>
+</head>
+<body>
+    <div id="root">Heading from DOM</div>
+    
+</body>
+</html>
+<script type="text/babel">
+    // let element = (
+    //     <div>
+    //         <h2 class="main-heading">Heading From React !...</h2>
+    //         <p class="main-heading">Para From React !...</p>
+    //     </div>
+    // )
+    let element = React.createElement("div",null,React.createElement("h2",{class:"main-heading"},"Heading From React!..."),React.createElement("p",{class:"main-heading"},"Para From React!..."))
+    let root = ReactDOM.createRoot(document.getElementById("root"))
+    // root.render(<h1 class="main-heading">Heading From React !...</h1>)
+    root.render(element)
+</script>

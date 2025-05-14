@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual DOM Performance in React</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body{
+            text-align: center;
+        }
+        #title{
+            color: blue;
+            font-size: 20px;
+            font-weight: 800;
+        }
+        button{
+            padding: 10px;
+            background-color: rgb(87, 87, 241);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 15px;
+        }
+        button:hover{
+            background-color: rgb(81, 240, 115);
+            color: rgb(8, 5, 5);
+        }
+    </style>
+</head>
+<body>
+    <h3 id="title"></h3>
+    <p id="dom-count"></p>
+    <button id="dom-btn">Click me from DOM</button>
+    <div id="react-count"></div>
+    <div id="root"></div>
+    
+</body>
+</html>
+<!-- traditional DOM -->
+<script>
+    let count= 0 
+    document.getElementById("dom-btn").addEventListener("click",()=>{
+        let title = document.getElementById("title") 
+        title.innerText="Vanilla JS"
+        count+=1
+        localStorage.setItem("count",count)
+        let message = document.getElementById("dom-count")
+        let v = localStorage.getItem("count")
+        message.innerText=`Number of Traditional DOM Updates : ${v}`
+    })
+</script>
+<!-- Vertutal DOM  -->
+<script type="text/babel">
+
+    let {useState} = React;
+    function Counter(){
+        let [count,setCount] = useState(0)
+        function Changing(){
+            let title = document.getElementById("title") 
+            if(title.innerText=="React")
+                setCount(count+1)
+        }
+        
+        return (
+            <>
+            <p>Number of Virtual DOM updates: {count}</p>
+            <button onClick={Changing}>Click Me after Clicking from React</button>
+            </> 
+        )
+    }
+    
+    function ButtonComponent(p){
+        return <button onClick={p.name}>Click me From React</button>
+    }
+    function ChangeTitle(){
+        let title = document.getElementById("title") 
+        title.innerText="React"
+    }
+    function App(){
+        return (
+            <>
+                <ButtonComponent name={ChangeTitle} />
+                <Counter/>
+            </>
+        )
+    }
+    
+    let Root = ReactDOM.createRoot(document.getElementById("react-count"))
+    Root.render(<App/>)
+
+</script>
