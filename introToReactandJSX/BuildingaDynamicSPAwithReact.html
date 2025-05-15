@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building a Dynamic SPA with React</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body{
+            text-align: center;
+        }
+        #navbar{
+            background-color: blanchedalmond;
+            display: flex;
+            justify-content: space-between;
+            height: 10vh;
+        }
+        button{
+            width: 20%;
+            height: 7vh;
+            padding: 10px;
+            margin: 10px;
+            background-color: rgb(92, 92, 226);
+            cursor: pointer;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            /* display: flex; */
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        button:hover{
+            background-color: aqua;
+            color: black;
+        }
+        p{
+            color: blueviolet;
+            font-size: 16px;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
+<script type="text/babel">
+    let {useState} = React ;
+    function SPA(){
+        let [name,setState] = useState("Welcome to Home")
+            return (
+                <>
+                <div id="navbar">
+                    <button onClick={()=>setState("Welcome To Home")}>Home</button>
+                    <button onClick={()=>setState("About Us")}>About</button>
+                    <button onClick={()=>setState("Contact Us")}>Contact</button>
+                </div>
+                    <p>{name}</p>
+                </>
+                
+                
+            )
+    }
+    function Update(){
+        return <SPA/>
+    }
+    let root = ReactDOM.createRoot(document.getElementById("root"))
+    root.render(<Update/>)
+</script>
