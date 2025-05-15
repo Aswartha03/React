@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body{
+            text-align: center;
+        }
+        h3{
+            color:rgb(248, 90, 164);
+        }
+        p{
+            color: blueviolet;
+            font-size: x-large;
+        }
+        button{
+            width: 20%;
+            height: 6vh;
+            margin: 10px;
+            padding: 10px;
+            cursor: pointer;
+            background-color: aqua;
+            border: none;
+            border-radius: 10px;
+        }
+        button:hover{
+            background-color: rgb(72, 250, 132);
+        }
+    </style>
+</head>
+<body>
+   
+    <div id="root"></div>
+</body>
+</html>
+<script type="text/babel">
+    // counter  
+    let {useState} = React;
+    function Counter(){
+        let [Count,setCount] = useState(0) ;
+        function IncreaseCount(){
+            setCount(Count+1)
+        }
+        function DecreaseCount(){
+            setCount(Count-1)
+        }
+        return (
+            <>
+                <h2>Count : {Count}</h2>
+                <button onClick={IncreaseCount}>Increase Count</button>
+                <button onClick={DecreaseCount}>Decrease Count</button>
+            </>
+        )
+    }
+    function Perform(){
+        return <Counter/>
+    }
+
+    let countingRoot = ReactDOM.createRoot(document.getElementById("root"))
+    countingRoot.render(<Perform/>)
+    // Gretings for user 
+    // // creation of component 
+    // function GreetUser(props){
+    //     return (
+    //         <>
+    //             <p>Hello {props.name}, your age is {props.age}</p>
+    //         </>
+    //     )
+    // }
+    // // 
+    // function App(){
+    //     return (
+    //         <>
+    //             <GreetUser name="Aswartha" age={20}/>
+    //             <GreetUser name="Umar" age={20}/>
+    //             <GreetUser name="Anand" age={21}/>
+    //         </>
+    //     )
+    // }
+
+    // let root  = ReactDOM.createRoot(document.getElementById("root"))
+    // root.render(<App/>)
+</script>
