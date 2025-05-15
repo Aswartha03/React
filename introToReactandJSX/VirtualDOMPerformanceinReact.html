@@ -60,30 +60,30 @@
     function Counter(){
         let [count,setCount] = useState(0)
         function Changing(){
+            setCount(count+=1)
             let title = document.getElementById("title") 
-            if(title.innerText=="React")
-                setCount(count+1)
+            title.innerText="React"
         }
         
         return (
             <>
             <p>Number of Virtual DOM updates: {count}</p>
-            <button onClick={Changing}>Click Me after Clicking from React</button>
+            <button onClick={Changing}>Click Me from React</button>
             </> 
         )
     }
     
-    function ButtonComponent(p){
-        return <button onClick={p.name}>Click me From React</button>
-    }
-    function ChangeTitle(){
-        let title = document.getElementById("title") 
-        title.innerText="React"
-    }
+    // function ButtonComponent(p){
+    //     return <button onClick={p.name}>Click me From React</button>
+    // }
+    // function ChangeTitle(){
+    //     let title = document.getElementById("title") 
+    //     title.innerText="React"
+    // }
     function App(){
         return (
             <>
-                <ButtonComponent name={ChangeTitle} />
+                
                 <Counter/>
             </>
         )
