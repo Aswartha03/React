@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Real-Time Autocorrect</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+    }
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+    .corrected {
+      font-size: 1.1rem;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+    const corrections = {
+      teh: "the",
+      recieve: "receive",
+      adress: "address",
+      definate: "definite",
+      occurence: "occurrence",
+      seperate: "separate",
+      thier: "their",
+      beleive: "believe"
+    };
+
+    function autocorrect(input) {
+      return input
+        .split(" ")
+        .map(word => corrections[word.toLowerCase()] || word)
+        .join(" ");
+    }
+
+    function App() {
+      const [text, setText] = React.useState("");
+
+      const correctedText = autocorrect(text);
+
+      return (
+        <div>
+          <h2>Real-Time Autocorrect</h2>
+          <input
+            type="text"
+            placeholder="Type something..."
+            value={text}
+            onChange={e => setText(e.target.value)}
+          />
+          <div className="corrected">
+            <strong>Corrected:</strong> {correctedText}
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
