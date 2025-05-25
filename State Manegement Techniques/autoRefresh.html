@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Quote Viewer</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    .quote-box {
+      margin: 1rem auto;
+      padding: 1rem;
+      max-width: 500px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    .quote-text {
+      font-size: 1.2rem;
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+    .quote-author {
+      font-size: 1rem;
+      color: #666;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+    const { useState, useEffect } = React;
+
+    function QuoteViewer() {
+      const [quote, setQuote] = useState({ text: '', author: '' });
+
+      const fetchQuote = async () => {
+        try {
+          const res = await fetch("https://api.quotable.io/random");
+          const data = await res.json();
+          setQuote({ text: data.content, author: data.author });
+        } catch (error) {
+          setQuote({ text: 'Failed to fetch quote.', author: '' });
+        }
+      };
+
+      // Fetch on mount and set interval for auto update
+      useEffect(() => {
+        fetchQuote(); // Initial fetch
+        const intervalId = setInterval(fetchQuote, 30000); // every 30s
+
+        return () => clearInterval(intervalId); // cleanup
+      }, []);
+
+      return (
+        <div>
+          <h1>Daily Quote Viewer</h1>
+          <div className="quote-box">
+            <div className="quote-text">"{quote.text}"</div>
+            <div className="quote-author">— {quote.author || "Unknown"}</div>
+          </div>
+          <button onClick={fetchQuote}>Get New Quote</button>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<QuoteViewer />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Theme Toggle App</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 2rem;
+      transition: background 0.3s;
+    }
+    button {
+      margin-bottom: 1rem;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .light {
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    .dark {
+      background-color: #222;
+      color: #eee;
+    }
+    .themed-box {
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 1rem;
+      transition: all 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+    // Reusable ThemedBox Component
+    function ThemedBox({ theme, children }) {
+      const boxStyle = {
+        backgroundColor: theme === 'dark' ? '#333' : '#fff',
+        color: theme === 'dark' ? '#fff' : '#000',
+        border: theme === 'dark' ? '2px solid #555' : '2px solid #ccc'
+      };
+
+      return (
+        <div className="themed-box" style={boxStyle}>
+          {children}
+        </div>
+      );
+    }
+
+    function App() {
+      const [theme, setTheme] = React.useState('light');
+
+      const toggleTheme = () => {
+        setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+      };
+
+      return (
+        <div className={theme}>
+          <button onClick={toggleTheme}>
+            Toggle to {theme === 'light' ? 'Dark' : 'Light'} Theme
+          </button>
+
+          <ThemedBox theme={theme}>
+            <h2>Themed Box</h2>
+            <p>This box adapts to the current theme.</p>
+          </ThemedBox>
+
+          <ThemedBox theme={theme}>
+            <p>You can reuse this component anywhere with different content.</p>
+          </ThemedBox>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
