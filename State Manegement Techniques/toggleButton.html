@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Toggle Button</title>
+  <style>
+    #toggleBtn {
+      font-size: 1.5rem;
+      padding: 10px 20px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: white;
+    }
+    .on {
+      color: green;
+    }
+    .off {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="toggleBtn" class="off">OFF</button>
+
+  <script>
+    const button = document.getElementById('toggleBtn');
+    let isOn = false;
+
+    button.addEventListener('click', () => {
+      isOn = !isOn;
+      button.textContent = isOn ? 'ON' : 'OFF';
+      button.className = isOn ? 'on' : 'off';
+    });
+  </script>
+
+</body>
+</html>

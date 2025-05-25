@@ -40,7 +40,9 @@
         return (
             <>
                 <h1>React API Cards</h1>
+                <button onClick={()=>setProducts([])}>Clear All</button>
                 <button onClick={fetchProducts}>Load Products</button>
+                
                 {products.map((product,i)=>(
                     <div key={i} id="prodcut-card">
                         <h3 key="love">Title : {product.title}</h3>
