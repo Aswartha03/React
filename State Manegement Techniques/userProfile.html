@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <title>User Profile & Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- React Router DOM v6 -->
+  <script src="https://unpkg.com/react-router-dom@6/umd/react-router-dom.development.js" crossorigin></script>
+
+  <!-- Chakra UI -->
+  <script src="https://unpkg.com/@chakra-ui/react@latest/dist/chakra-ui-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/react@latest/dist/emotion-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/styled@latest/dist/emotion-styled.umd.min.js"></script>
+  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/javascript">
+    const {
+      ChakraProvider,
+      Box,
+      Heading,
+      Text,
+      Input,
+      Button,
+      VStack,
+      HStack,
+      FormControl,
+      FormLabel,
+      Container,
+      Alert,
+      AlertIcon,
+      Link,
+    } = window["@chakra-ui/react"];
+    const {
+      BrowserRouter,
+      Routes,
+      Route,
+      Link: RouterLink,
+      useNavigate,
+    } = window.ReactRouterDOM;
+    const { createContext, useContext, useState, useEffect } = React;
+
+    // Create UserContext to hold user data and updater
+    const UserContext = createContext();
+
+    function UserProvider({ children }) {
+      // Mock initial user data
+      const [user, setUser] = useState({
+        name: "Jane Doe",
+        email: "jane.doe@example.com",
+      });
+
+      return (
+        <UserContext.Provider value={{ user, setUser }}>
+          {children}
+        </UserContext.Provider>
+      );
+    }
+
+    // Navbar with navigation links
+    function Navbar() {
+      return (
+        <Box bg="teal.600" color="white" p="4" mb="6">
+          <HStack spacing="8" maxW="container.lg" mx="auto">
+            <Heading size="md">
+              <Link as={RouterLink} to="/" _hover={{ textDecoration: "none" }} color="white">
+                MyApp
+              </Link>
+            </Heading>
+            <HStack spacing="4">
+              <Link as={RouterLink} to="/" color="white" _hover={{ textDecoration: "underline" }}>
+                Home
+              </Link>
+              <Link as={RouterLink} to="/profile" color="white" _hover={{ textDecoration: "underline" }}>
+                Profile
+              </Link>
+              <Link as={RouterLink} to="/settings" color="white" _hover={{ textDecoration: "underline" }}>
+                Settings
+              </Link>
+            </HStack>
+          </HStack>
+        </Box>
+      );
+    }
+
+    // Home page
+    function Home() {
+      return (
+        <Container maxW="container.md" centerContent>
+          <Heading mb="4">Welcome to the Home Page</Heading>
+          <Text>This is a simple app demonstrating user data management with Context and Routing.</Text>
+        </Container>
+      );
+    }
+
+    // Profile page - displays user info from context
+    function Profile() {
+      const { user } = useContext(UserContext);
+
+      return (
+        <Container maxW="container.md" centerContent>
+          <Heading mb="4">User Profile</Heading>
+          <Box w="100%" p="6" borderWidth="1px" borderRadius="md" shadow="md">
+            <Text fontSize="lg" mb="2"><strong>Name:</strong> {user.name}</Text>
+            <Text fontSize="lg"><strong>Email:</strong> {user.email}</Text>
+          </Box>
+        </Container>
+      );
+    }
+
+    // Settings page - form to update user data
+    function Settings() {
+      const { user, setUser } = useContext(UserContext);
+      const [name, setName] = useState(user.name);
+      const [email, setEmail] = useState(user.email);
+      const [success, setSuccess] = useState(false);
+      const navigate = useNavigate();
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        // Update context user data
+        setUser({ name, email });
+        setSuccess(true);
+        // Optional: Redirect to profile after short delay
+        setTimeout(() => {
+          setSuccess(false);
+          navigate("/profile");
+        }, 2000);
+      };
+
+      return (
+        <Container maxW="container.md">
+          <Heading mb="6" textAlign="center">Settings</Heading>
+          <Box
+            p="6"
+            borderWidth="1px"
+            borderRadius="md"
+            shadow="md"
+            maxW="400px"
+            mx="auto"
+          >
+            <form onSubmit={handleSubmit}>
+              <VStack spacing="4">
+                <FormControl id="name" isRequired>
+                  <FormLabel>Name</FormLabel>
+                  <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter your name"
+                  />
+                </FormControl>
+                <FormControl id="email" isRequired>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                  />
+                </FormControl>
+                <Button type="submit" colorScheme="teal" w="full">
+                  Update
+                </Button>
+              </VStack>
+            </form>
+            {success && (
+              <Alert status="success" mt="4" borderRadius="md">
+                <AlertIcon />
+                Profile updated successfully! Redirecting...
+              </Alert>
+            )}
+          </Box>
+        </Container>
+      );
+    }
+
+    // Main App component
+    function App() {
+      return (
+        <ChakraProvider>
+          <UserProvider>
+            <BrowserRouter>
+              <Navbar />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/settings" element={<Settings />} />
+              </Routes>
+            </BrowserRouter>
+          </UserProvider>
+        </ChakraProvider>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
