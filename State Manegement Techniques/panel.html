@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>React Notification Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Chakra UI & Dependencies -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@chakra-ui/react@latest/dist/chakra-ui-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/react@latest/dist/emotion-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/styled@latest/dist/emotion-styled.umd.min.js"></script>
+  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/javascript">
+    const {
+      ChakraProvider,
+      Box,
+      Heading,
+      VStack,
+      Text,
+      Button,
+      CloseButton,
+    } = window["@chakra-ui/react"];
+    const { useState, useEffect, useContext, createContext } = React;
+
+    // Notification Context
+    const NotificationContext = createContext();
+
+    const NotificationProvider = ({ children }) => {
+      const [notifications, setNotifications] = useState([]);
+
+      // Simulate real-time notifications every 5s
+      useEffect(() => {
+        const interval = setInterval(() => {
+          const newNotification = {
+            id: Date.now(),
+            message: "🔔 You have a new notification at " + new Date().toLocaleTimeString(),
+          };
+          setNotifications((prev) => [newNotification, ...prev]);
+        }, 5000);
+        return () => clearInterval(interval);
+      }, []);
+
+      const removeNotification = (id) => {
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+      };
+
+      return (
+        <NotificationContext.Provider value={{ notifications, removeNotification }}>
+          {children}
+        </NotificationContext.Provider>
+      );
+    };
+
+    // Notification Panel
+    const NotificationPanel = () => {
+      const { notifications, removeNotification } = useContext(NotificationContext);
+
+      return (
+        <Box p="4" maxW="500px" mx="auto" mt="6" borderWidth="1px" borderRadius="md" shadow="md">
+          <Heading size="md" mb="4">Real-Time Notifications</Heading>
+          <VStack spacing="3" align="stretch">
+            {notifications.length === 0 ? (
+              <Text>No notifications</Text>
+            ) : (
+              notifications.map((note) => (
+                <Box key={note.id} p="3" bg="gray.100" borderRadius="md" position="relative">
+                  <Text>{note.message}</Text>
+                  <CloseButton
+                    position="absolute"
+                    top="8px"
+                    right="8px"
+                    size="sm"
+                    onClick={() => removeNotification(note.id)}
+                  />
+                </Box>
+              ))
+            )}
+          </VStack>
+        </Box>
+      );
+    };
+
+    // App Component
+    const App = () => (
+      <ChakraProvider>
+        <NotificationProvider>
+          <NotificationPanel />
+        </NotificationProvider>
+      </ChakraProvider>
+    );
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
