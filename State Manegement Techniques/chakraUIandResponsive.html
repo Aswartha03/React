@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>React Chakra Dashboard</title>
+
+  <!-- Chakra UI -->
+  <script src="https://unpkg.com/@chakra-ui/react@latest/dist/chakra-ui-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/react@latest/dist/emotion-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/styled@latest/dist/emotion-styled.umd.min.js"></script>
+  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+
+  <!-- React -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/react-icons@4.10.1/umd/react-icons.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/javascript">
+    const {
+      ChakraProvider,
+      Box,
+      Flex,
+      Button,
+      IconButton,
+      useDisclosure,
+      Drawer,
+      DrawerOverlay,
+      DrawerContent,
+      DrawerHeader,
+      DrawerBody,
+      VStack,
+      Text,
+      Grid
+    } = window["@chakra-ui/react"];
+    const { FiMenu } = window.ReactIcons.fi;
+    const { useState, useContext, createContext } = React;
+
+    // --- Contexts ---
+    const AuthContext = createContext();
+    const ThemeContext = createContext();
+
+    const AuthProvider = ({ children }) => {
+      const [isLoggedIn, setIsLoggedIn] = useState(false);
+      const toggleAuth = () => setIsLoggedIn(prev => !prev);
+      return (
+        <AuthContext.Provider value={{ isLoggedIn, toggleAuth }}>
+          {children}
+        </AuthContext.Provider>
+      );
+    };
+
+    const ThemeProviderCustom = ({ children }) => {
+      const [theme, setTheme] = useState("light");
+      const toggleTheme = () =>
+        setTheme(prev => (prev === "light" ? "dark" : "light"));
+      return (
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+          {children}
+        </ThemeContext.Provider>
+      );
+    };
+
+    // --- Components ---
+
+    const Navbar = ({ onOpen }) => {
+      const { isLoggedIn, toggleAuth } = useContext(AuthContext);
+      const { theme, toggleTheme } = useContext(ThemeContext);
+      return (
+        <Flex
+          p="4"
+          bg={theme === "light" ? "gray.100" : "gray.700"}
+          justify="space-between"
+          align="center"
+        >
+          <IconButton
+            display={{ base: "inline-flex", md: "none" }}
+            icon={<FiMenu />}
+            onClick={onOpen}
+            aria-label="Open Menu"
+          />
+          <Text fontSize="xl" fontWeight="bold">
+            Dashboard
+          </Text>
+          <Flex gap="2">
+            <Button size="sm" onClick={toggleAuth}>
+              {isLoggedIn ? "Logout" : "Login"}
+            </Button>
+            <Button size="sm" onClick={toggleTheme}>
+              {theme === "light" ? "Dark" : "Light"}
+            </Button>
+          </Flex>
+        </Flex>
+      );
+    };
+
+    const Sidebar = () => {
+      const { theme } = useContext(ThemeContext);
+      return (
+        <VStack
+          spacing="4"
+          p="4"
+          bg={theme === "light" ? "gray.200" : "gray.600"}
+          align="stretch"
+          minH="100vh"
+          display={{ base: "none", md: "flex" }}
+        >
+          <Button variant="ghost">Dashboard</Button>
+          <Button variant="ghost">Settings</Button>
+        </VStack>
+      );
+    };
+
+    const DrawerSidebar = ({ isOpen, onClose }) => {
+      const { theme } = useContext(ThemeContext);
+      return (
+        <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+          <DrawerOverlay />
+          <DrawerContent bg={theme === "light" ? "gray.200" : "gray.600"}>
+            <DrawerHeader>Menu</DrawerHeader>
+            <DrawerBody>
+              <VStack align="stretch">
+                <Button variant="ghost" onClick={onClose}>Dashboard</Button>
+                <Button variant="ghost" onClick={onClose}>Settings</Button>
+              </VStack>
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      );
+    };
+
+    const Dashboard = () => {
+      const { theme } = useContext(ThemeContext);
+      return (
+        <Grid templateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="4" p="4">
+          {["Users", "Sales", "Reports"].map((item) => (
+            <Box
+              key={item}
+              p="6"
+              shadow="md"
+              borderRadius="md"
+              bg={theme === "light" ? "gray.100" : "gray.700"}
+              color={theme === "light" ? "black" : "white"}
+            >
+              <Text fontSize="lg" fontWeight="bold">{item}</Text>
+              <Text mt="2">Data and analytics go here.</Text>
+            </Box>
+          ))}
+        </Grid>
+      );
+    };
+
+    const Footer = () => {
+      const { isLoggedIn } = useContext(AuthContext);
+      const { theme } = useContext(ThemeContext);
+      return (
+        <Box
+          as="footer"
+          p="4"
+          bg={theme === "light" ? "gray.300" : "gray.800"}
+          color={theme === "light" ? "black" : "white"}
+          textAlign="center"
+        >
+          {isLoggedIn ? "Welcome, User" : "Please log in"}
+        </Box>
+      );
+    };
+
+    const App = () => {
+      const { isOpen, onOpen, onClose } = useDisclosure();
+      const { theme } = useContext(ThemeContext);
+
+      return (
+        <Flex direction="column" minH="100vh" bg={theme === "light" ? "white" : "gray.900"}>
+          <Navbar onOpen={onOpen} />
+          <Flex flex="1">
+            <Sidebar />
+            <DrawerSidebar isOpen={isOpen} onClose={onClose} />
+            <Box flex="1">
+              <Dashboard />
+            </Box>
+          </Flex>
+          <Footer />
+        </Flex>
+      );
+    };
+
+    const RootApp = () => (
+      <ChakraProvider>
+        <ThemeProviderCustom>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ThemeProviderCustom>
+      </ChakraProvider>
+    );
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(React.createElement(RootApp));
+  </script>
+</body>
+</html>
