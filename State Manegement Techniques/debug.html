@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>React Auth + Theme Context</title>
+
+  <!-- Chakra UI CDN -->
+  <script src="https://unpkg.com/@chakra-ui/react@latest/dist/chakra-ui-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/react@latest/dist/emotion-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/styled@latest/dist/emotion-styled.umd.min.js"></script>
+  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+
+  <!-- React CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/javascript">
+    const { ChakraProvider, Box, Flex, Grid, Button, extendTheme } = window["@chakra-ui/react"];
+    const { useState, useContext, createContext } = React;
+
+    // Auth Context
+    const AuthContext = createContext();
+    const AuthContextProvider = ({ children }) => {
+      const [isLoggedIn, setIsLoggedIn] = useState(false);
+      const toggleAuth = () => setIsLoggedIn(!isLoggedIn);
+      return (
+        <AuthContext.Provider value={{ isLoggedIn, toggleAuth }}>
+          {children}
+        </AuthContext.Provider>
+      );
+    };
+
+    // Theme Context
+    const ThemeContext = createContext();
+    const ThemeContextProvider = ({ children }) => {
+      const [theme, setTheme] = useState('light');
+      const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
+      return (
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+          {children}
+        </ThemeContext.Provider>
+      );
+    };
+
+    // Main App Component
+    const App = () => {
+      const { isLoggedIn, toggleAuth } = useContext(AuthContext);
+      const { theme, toggleTheme } = useContext(ThemeContext);
+
+      return (
+        <ChakraProvider>
+          <Flex
+            as="nav"
+            p="4"
+            bg={theme === 'light' ? 'gray.100' : 'gray.700'}
+            justifyContent="space-between"
+          >
+            <Button onClick={toggleAuth}>
+              {isLoggedIn ? 'Log Out' : 'Log In'}
+            </Button>
+            <Button onClick={toggleTheme}>
+              Toggle to {theme === 'light' ? 'Dark' : 'Light'} Theme
+            </Button>
+          </Flex>
+
+          <Grid templateColumns="repeat(3, 1fr)" gap="4" p="4">
+            {['Card 1', 'Card 2', 'Card 3'].map((card) => (
+              <Box
+                key={card}
+                p="4"
+                shadow="md"
+                bg={theme === 'light' ? 'gray.200' : 'gray.600'}
+                color={theme === 'light' ? 'black' : 'white'}
+              >
+                {card}
+              </Box>
+            ))}
+          </Grid>
+
+          <Box
+            as="footer"
+            p="4"
+            bg={theme === 'light' ? 'gray.300' : 'gray.800'}
+            color={theme === 'light' ? 'black' : 'white'}
+            textAlign="center"
+          >
+            {isLoggedIn ? 'Welcome, User' : 'Please log in'}
+          </Box>
+        </ChakraProvider>
+      );
+    };
+
+    const RootApp = () => (
+      <ThemeContextProvider>
+        <AuthContextProvider>
+          <App />
+        </AuthContextProvider>
+      </ThemeContextProvider>
+    );
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(RootApp));
+  </script>
+</body>
+</html>
