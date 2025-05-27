@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <title>React Product Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- React Router DOM v6 -->
+  <script src="https://unpkg.com/react-router-dom@6/umd/react-router-dom.development.js" crossorigin></script>
+
+  <!-- Chakra UI -->
+  <script src="https://unpkg.com/@chakra-ui/react@latest/dist/chakra-ui-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/react@latest/dist/emotion-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/styled@latest/dist/emotion-styled.umd.min.js"></script>
+  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/javascript">
+    const {
+      ChakraProvider,
+      Box,
+      Heading,
+      Text,
+      Select,
+      Grid,
+      GridItem,
+      Image,
+      VStack,
+      Spinner,
+      Button,
+      Link,
+      Center,
+      HStack
+    } = window["@chakra-ui/react"];
+    const {
+      BrowserRouter,
+      Routes,
+      Route,
+      useNavigate,
+      useParams,
+      Link: RouterLink
+    } = window.ReactRouterDOM;
+    const { useState, useEffect } = React;
+
+    // Navbar component for navigation
+    function Navbar() {
+      return (
+        <Box bg="teal.500" p="4" color="white" mb="6">
+          <Heading size="md">
+            <Link as={RouterLink} to="/" _hover={{ textDecoration: 'none' }} color="white">
+              Product Store
+            </Link>
+          </Heading>
+        </Box>
+      );
+    }
+
+    // Home component with product list, filter, and sort
+    function Home() {
+      const [products, setProducts] = useState([]);
+      const [filtered, setFiltered] = useState([]);
+      const [categories, setCategories] = useState([]);
+      const [selectedCategory, setSelectedCategory] = useState("");
+      const [sortOrder, setSortOrder] = useState(""); // "asc" or "desc"
+      const [loading, setLoading] = useState(true);
+      const navigate = useNavigate();
+
+      useEffect(() => {
+        async function fetchData() {
+          setLoading(true);
+          const res = await fetch("https://dummyjson.com/products");
+          const data = await res.json();
+          setProducts(data.products);
+          setFiltered(data.products);
+          // Get unique categories
+          const cats = [...new Set(data.products.map(p => p.category))];
+          setCategories(cats);
+          setLoading(false);
+        }
+        fetchData();
+      }, []);
+
+      useEffect(() => {
+        let temp = [...products];
+        if (selectedCategory) {
+          temp = temp.filter(p => p.category === selectedCategory);
+        }
+        if (sortOrder === "asc") {
+          temp.sort((a, b) => a.price - b.price);
+        } else if (sortOrder === "desc") {
+          temp.sort((a, b) => b.price - a.price);
+        }
+        setFiltered(temp);
+      }, [selectedCategory, sortOrder, products]);
+
+      if (loading) return (
+        <Center minH="60vh"><Spinner size="xl" /></Center>
+      );
+
+      return (
+        <Box px="6" pb="10">
+          <Heading mb="4">Products</Heading>
+
+          <HStack spacing="4" mb="6" flexWrap="wrap">
+            <Box>
+              <Text mb="1">Filter by Category</Text>
+              <Select
+                placeholder="All Categories"
+                value={selectedCategory}
+                onChange={e => setSelectedCategory(e.target.value)}
+              >
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </Select>
+            </Box>
+
+            <Box>
+              <Text mb="1">Sort by Price</Text>
+              <Select
+                placeholder="Select order"
+                value={sortOrder}
+                onChange={e => setSortOrder(e.target.value)}
+              >
+                <option value="asc">Low to High</option>
+                <option value="desc">High to Low</option>
+              </Select>
+            </Box>
+          </HStack>
+
+          {filtered.length === 0 ? (
+            <Text>No products found.</Text>
+          ) : (
+            <Grid templateColumns={["repeat(1,1fr)", "repeat(2,1fr)", "repeat(4,1fr)"]} gap={6}>
+              {filtered.map(product => (
+                <GridItem
+                  key={product.id}
+                  borderWidth="1px"
+                  borderRadius="md"
+                  p="4"
+                  cursor="pointer"
+                  onClick={() => navigate(`/product/${product.id}`)}
+                  _hover={{ shadow: "md" }}
+                >
+                  <Image src={product.thumbnail} alt={product.title} boxSize="200px" objectFit="cover" mb="3" borderRadius="md" />
+                  <Text fontWeight="bold" noOfLines={1}>{product.title}</Text>
+                  <Text color="gray.600">${product.price}</Text>
+                  <Text fontSize="sm" color="gray.500" noOfLines={2}>{product.description}</Text>
+                </GridItem>
+              ))}
+            </Grid>
+          )}
+        </Box>
+      );
+    }
+
+    // Product Detail page
+    function ProductDetail() {
+      const { id } = useParams();
+      const [product, setProduct] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const navigate = useNavigate();
+
+      useEffect(() => {
+        async function fetchProduct() {
+          setLoading(true);
+          setError(null);
+          try {
+            const res = await fetch(`https://dummyjson.com/products/${id}`);
+            if (!res.ok) throw new Error("Product not found");
+            const data = await res.json();
+            setProduct(data);
+          } catch (err) {
+            setError(err.message);
+          } finally {
+            setLoading(false);
+          }
+        }
+        fetchProduct();
+      }, [id]);
+
+      if (loading) return (
+        <Center minH="60vh"><Spinner size="xl" /></Center>
+      );
+
+      if (error) return (
+        <Center minH="60vh" flexDirection="column" p="6">
+          <Text color="red.500" mb="4">{error}</Text>
+          <Button onClick={() => navigate(-1)} colorScheme="teal">Go Back</Button>
+        </Center>
+      );
+
+      return (
+        <Box maxW="700px" mx="auto" p="6">
+          <Button mb="4" onClick={() => navigate(-1)} colorScheme="teal">Back to Products</Button>
+          <Heading mb="4">{product.title}</Heading>
+          <Image src={product.thumbnail} alt={product.title} borderRadius="md" mb="4" maxH="400px" objectFit="cover" />
+          <Text mb="2"><strong>Price:</strong> ${product.price}</Text>
+          <Text mb="2"><strong>Category:</strong> {product.category}</Text>
+          <Text mb="2"><strong>Description:</strong> {product.description}</Text>
+          <Text mb="2"><strong>Brand:</strong> {product.brand}</Text>
+          <Text mb="2"><strong>Rating:</strong> {product.rating}</Text>
+          {product.images && product.images.length > 0 && (
+            <Box mt="6">
+              <Heading size="sm" mb="2">More Images</Heading>
+              <Grid templateColumns={["repeat(2,1fr)", "repeat(4,1fr)"]} gap={4}>
+                {product.images.map((img, idx) => (
+                  <Image key={idx} src={img} alt={`${product.title} ${idx + 1}`} borderRadius="md" maxH="150px" objectFit="cover" />
+                ))}
+              </Grid>
+            </Box>
+          )}
+        </Box>
+      );
+    }
+
+    // Main app with routes and navbar
+    function App() {
+      return (
+        <ChakraProvider>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+          </Routes>
+        </ChakraProvider>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
