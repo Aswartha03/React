@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>React Blog App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- React & React Router -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-router-dom@6/umd/react-router-dom.development.js" crossorigin></script>
+
+  <!-- Chakra UI -->
+  <script src="https://unpkg.com/@chakra-ui/react@latest/dist/chakra-ui-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/react@latest/dist/emotion-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/styled@latest/dist/emotion-styled.umd.min.js"></script>
+  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/javascript">
+    const {
+      ChakraProvider, Box, Heading, Input, Text, VStack, Button, Spinner, Tag, HStack, Link
+    } = window["@chakra-ui/react"];
+    const { BrowserRouter, Routes, Route, Link: RouterLink, useParams, useNavigate } = window.ReactRouterDOM;
+    const { useEffect, useState } = React;
+
+    const Navbar = () => (
+      <Box bg="teal.500" p="4" color="white">
+        <HStack spacing="6">
+          <Link as={RouterLink} to="/" fontWeight="bold">Home</Link>
+          <Link as={RouterLink} to="/about">About</Link>
+        </HStack>
+      </Box>
+    );
+
+    const Home = () => {
+      const [posts, setPosts] = useState([]);
+      const [search, setSearch] = useState("");
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        fetch("https://dummyjson.com/posts")
+          .then(res => res.json())
+          .then(data => {
+            setPosts(data.posts);
+            setLoading(false);
+          });
+      }, []);
+
+      const filteredPosts = posts.filter(post =>
+        post.title.toLowerCase().includes(search.toLowerCase())
+      );
+
+      return (
+        <Box p="6">
+          <Heading mb="4">Blog Posts</Heading>
+          <Input
+            placeholder="Search by title..."
+            mb="4"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {loading ? (
+            <Spinner />
+          ) : (
+            <VStack align="stretch" spacing="4">
+              {filteredPosts.map(post => (
+                <Box
+                  key={post.id}
+                  p="4"
+                  borderWidth="1px"
+                  borderRadius="md"
+                  shadow="sm"
+                >
+                  <Link as={RouterLink} to={`/post/${post.id}`} fontWeight="bold" fontSize="lg">
+                    {post.title}
+                  </Link>
+                  <Text noOfLines={2}>{post.body}</Text>
+                </Box>
+              ))}
+              {filteredPosts.length === 0 && <Text>No matching posts found.</Text>}
+            </VStack>
+          )}
+        </Box>
+      );
+    };
+
+    const PostDetails = () => {
+      const { id } = useParams();
+      const [post, setPost] = useState(null);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        fetch(`https://dummyjson.com/posts/${id}`)
+          .then(res => res.json())
+          .then(data => {
+            setPost(data);
+            setLoading(false);
+          });
+      }, [id]);
+
+      if (loading) return <Box p="6"><Spinner /></Box>;
+      if (!post) return <Box p="6"><Text>Post not found.</Text></Box>;
+
+      return (
+        <Box p="6">
+          <Heading mb="4">{post.title}</Heading>
+          <Text mb="4">{post.body}</Text>
+          <HStack spacing="2">
+            {post.tags.map((tag, idx) => (
+              <Tag key={idx} colorScheme="teal">#{tag}</Tag>
+            ))}
+          </HStack>
+        </Box>
+      );
+    };
+
+    const About = () => (
+      <Box p="6">
+        <Heading mb="4">About</Heading>
+        <Text>This is a simple React blog app demo using React Router and Chakra UI.</Text>
+        <Text mt="2">Author: Your Name</Text>
+      </Box>
+    );
+
+    const App = () => (
+      <ChakraProvider>
+        <BrowserRouter>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/post/:id" element={<PostDetails />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </BrowserRouter>
+      </ChakraProvider>
+    );
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
