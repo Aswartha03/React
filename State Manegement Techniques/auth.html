@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Auth Context Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    nav, footer {
+      padding: 1rem;
+      color: white;
+    }
+    nav {
+      background-color: #2563eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer {
+      background-color: #e5e7eb;
+      color: black;
+      text-align: center;
+    }
+    main {
+      flex: 1;
+      padding: 2rem;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+    .btn {
+      background: white;
+      color: #2563eb;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #dbeafe;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <h1>My App</h1>
+    <button id="authBtn" class="btn">Login</button>
+  </nav>
+
+  <main id="mainContent">
+    Please log in to continue.
+  </main>
+
+  <footer id="footerContent">
+    Please log in
+  </footer>
+
+  <script>
+    let isAuthenticated = false;
+
+    const authBtn = document.getElementById('authBtn');
+    const mainContent = document.getElementById('mainContent');
+    const footerContent = document.getElementById('footerContent');
+
+    function updateUI() {
+      authBtn.textContent = isAuthenticated ? 'Logout' : 'Login';
+      mainContent.textContent = isAuthenticated ? 'You are logged in!' : 'Please log in to continue.';
+      footerContent.textContent = isAuthenticated ? 'Welcome, User' : 'Please log in';
+    }
+
+    authBtn.addEventListener('click', () => {
+      isAuthenticated = !isAuthenticated;
+      updateUI();
+    });
+
+    // Initial UI update
+    updateUI();
+  </script>
+
+</body>
+</html>
